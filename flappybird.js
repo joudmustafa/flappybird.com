@@ -37,9 +37,11 @@ let gravity = 0.4;
 let gameOver = false;
 let score = 0;
 
-let pointSound = new Audio("./sfx_point.wav")
+//sounds
+let pointSound = new Audio("./sfx_point.wav");
 let wingSound = new Audio("./sfx_wing.wav");
 let hitSound = new Audio("./sfx_hit.wav");
+let swooshSound = new Audio("./sfx_swooshing.wav"); // ✅ swoosh sound
 let bmg = new Audio("./bgm_mario.mp3");
 bmg.loop = true;
 
@@ -66,7 +68,11 @@ window.onload = function () {
     setInterval(placePipes, 1500); //every 1.5 seconds
     setInterval(animateBird, 100); // animate bird
 
+    // controls: keyboard, mouse, touch
     document.addEventListener("keydown", moveBird);
+    document.addEventListener("mousedown", moveBird);
+    document.addEventListener("touchstart", moveBird);
+
     bmg.play();
 }
 
@@ -152,10 +158,18 @@ function placePipes() {
         passed: false
     };
     pipeArray.push(bottomPipe);
+
+    swooshSound.play(); // ✅ play swoosh when new pipes appear
 }
 
 function moveBird(e) {
-    if (e.code == "Space" || e.code == "ArrowUp" || e.code == "KeyX") {
+    if (
+        e.type === "mousedown" ||
+        e.type === "touchstart" ||
+        e.code == "Space" ||
+        e.code == "ArrowUp" ||
+        e.code == "KeyX"
+    ) {
         if (bmg.paused) {
             bmg.play();
         }
@@ -164,6 +178,7 @@ function moveBird(e) {
 
         //reset game
         if (gameOver) {
+            swooshSound.play(); // ✅ play swoosh when restarting
             bird.y = birdY;
             pipeArray = [];
             score = 0;
@@ -178,3 +193,4 @@ function detectCollision(a, b) {
         a.y < b.y + b.height &&  //a's top left corner doesn't reach b's bottom left corner
         a.y + a.height > b.y;    //a's bottom left corner passes b's top left corner
 }
+  
